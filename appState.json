@@ -1,0 +1,107 @@
+{
+  "EDITOR_STATE": {
+    "allProjectFiles": {
+      "6dc897df-bf72-44dc-ab37-c5a9c825b842": {
+        "id": "6dc897df-bf72-44dc-ab37-c5a9c825b842",
+        "parent": null,
+        "name": "AWS-SMS",
+        "type": "DIRECTORY",
+        "isDirectory": true,
+        "children": [
+          "6a86cd80-5494-4f98-8878-45bc66681242"
+        ],
+        "isRemovable": false,
+        "filePath": "AWS-SMS"
+      },
+      "6a86cd80-5494-4f98-8878-45bc66681242": {
+        "id": "6a86cd80-5494-4f98-8878-45bc66681242",
+        "parent": "6dc897df-bf72-44dc-ab37-c5a9c825b842",
+        "name": "lambda.js",
+        "type": "LAMBDA_FILE",
+        "isDirectory": false,
+        "children": [],
+        "isRemovable": true,
+        "filePath": "AWS-SMS/lambda.js",
+        "code": "let AWS = require('aws-sdk');\nconst sns = new AWS.SNS();\n\nexports.handler = function (event, context, callback) {\n    let receiver = event['receiver'];\n    let sender = event['sender'];\n    let message = event['message'];\n\n    let isPromotional = true;\n\n    console.log(\"Sending message \", message, \" to receiver \", receiver);\n    \n    sns.publish({\n        Message: message,\n        MessageAttributes: {\n            'AWS.SNS.SMS.SMSType': {\n                DataType: 'String',\n                StringValue: 'Promotional'\n            },\n            'AWS.SNS.SMS.SenderID': {\n                DataType: 'String',\n                StringValue: sender\n            },\n        },\n        PhoneNumber: receiver\n    }).promise()\n        .then(data => {\n            console.log(\"Sent message to \",receiver);\n            callback(null,data);\n        })\n        .catch(err => {\n            console.log(\"Send SMS failed\", err);\n            callback(err);\n        });\n\n}",
+        "triggers": [
+          {
+            "resourceName": "apigusEast1SMSGatewaysendSMSpost",
+            "config": {}
+          }
+        ],
+        "config": {
+          "runtime": "nodejs8.10",
+          "timeout": 60,
+          "memory": 128
+        }
+      }
+    },
+    "deletedFiles": [],
+    "rootNode": "6dc897df-bf72-44dc-ab37-c5a9c825b842",
+    "openFiles": [
+      "6a86cd80-5494-4f98-8878-45bc66681242"
+    ],
+    "currentFileId": "6a86cd80-5494-4f98-8878-45bc66681242",
+    "resources": {
+      "apigusEast1SMSGatewaysendSMSpost": {
+        "name": "apigusEast1SMSGatewaysendSMSpost",
+        "type": "API_GATEWAY",
+        "config": {
+          "selectedRegion": "us-east-1",
+          "apiMode": 0,
+          "apiName": "SMSGateway",
+          "endpointType": "EDGE",
+          "resourceMode": 0,
+          "resourceName": "sendSMS",
+          "resourcePath": "/sendSMS",
+          "restMethod": "POST",
+          "proxyIntegration": false,
+          "enableCORS": false,
+          "stageMode": 0,
+          "stageName": "prod"
+        },
+        "globallyEditable": false
+      },
+      "snsDirectSMSResource": {
+        "name": "snsDirectSMSResource",
+        "type": "SNS",
+        "config": {
+          "snsType": 1,
+          "numbers": [
+            "@{receiver}"
+          ]
+        },
+        "globallyEditable": false
+      }
+    },
+    "envVariables": [
+      {
+        "lambdaId": "all",
+        "varKey": "SIGMA_AWS_ACC_ID",
+        "varValue": null,
+        "shouldPersist": false,
+        "displayOnly": false,
+        "editable": false
+      }
+    ],
+    "packageJSON": {
+      "dependencies": {}
+    },
+    "lambdaId": "6a86cd80-5494-4f98-8878-45bc66681242"
+  },
+  "PROJECT_META": {
+    "projectName": "AWS-SMS",
+    "projectDescription": "Send SMS",
+    "projectVersion": "1.0.0",
+    "projectRegion": "us-east-1",
+    "platform": "AWS",
+    "lastSave": 1543883072139
+  },
+  "VCS_STATE": {
+    "provider": "GitHub",
+    "repo": {
+      "name": "AWS-SMS",
+      "url": "https://github.com/jawarnerjr/AWS_SMS"
+    }
+  }
+}
